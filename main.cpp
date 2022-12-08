@@ -10,7 +10,8 @@ int state_num;      //the number of the state of encoder structure memory size?
 float code_rate = (float) message_length / (float) codeword_length;
 // channel coefficient
 double N0, sgm;
-
+//#define message_length 5 //the length of message
+//#define codeword_length 10 //the length of codeword
 vector<int> message;
 vector<int> codeword;
 vector<int> re_codeword;
@@ -28,7 +29,7 @@ int main() {
     double progress;
 
     //generate state table
-    statetable();
+    statetable(0, 0, 0);
 
     //random seed
     srand((int) time(nullptr));
@@ -74,7 +75,7 @@ int main() {
             //demodulation();
 
             //convolutional decoder
-            decoder();
+            decoder(std::vector<int>());
 
             //calculate the number of bit error
             for (i = 0; i < message_length; i++) {

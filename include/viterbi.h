@@ -11,21 +11,21 @@
 #include<vector>
 #include<iostream>
 #include<ios>
-//#define message_length 5 //the length of message
-//#define codeword_length 10 //the length of codeword
+#include<map>
 #define pi M_PI
+using std::vector;
+using std::map;
+void statetable(int constraint_c1, int constraint_c2, int memory_size);
 
-void statetable();
+vector<int> encoder(int n1, const int n2, const int memory_size, const vector<int>& message);
 
-std::vector<int> encoder(int n1, const int n2, const int memory_size, const std::vector<int>& message);
+vector<vector<double>> modulation(const vector<int>& codeword);
 
-std::vector<std::vector<double>> modulation(const std::vector<int>& codeword);
+void demodulation(vector<vector<double>> rx_symbol, vector<int> re_codeword);
 
-void demodulation(std::vector<std::vector<double>> rx_symbol, std::vector<int> re_codeword);
+vector<vector<double>> channel(vector<vector<double>> tx_symbol, double seg);
 
-std::vector<std::vector<double>> channel(std::vector<std::vector<double>> tx_symbol, double seg);
-
-void decoder();
+vector<int> decoder(vector<int> re_codeword);
 
 
 #endif //VITERBI_DECODING_VITERBI_H

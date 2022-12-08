@@ -2,8 +2,26 @@
 // Created by Dale on 2022/12/7.
 //
 #include"../include/viterbi.h"
+#include "../include/state_change.h"
 
-void statetable() {
+std::string int_to_binaryString(int num) {
+    char temp[201];
+    itoa(num, temp, 2);
+    return std::string(temp);
+}
+
+void statetable(int constraint_c1, int constraint_c2, int memory_size) {
+
+    map<int, state_change> state_table;
+
+    for (int ID = 0; ID < (1 << (memory_size + 1)); ++ID) {
+        std::string current_state = int_to_binaryString(ID);
+        state_table.insert(std::pair<int, state_change>(ID, state_change(0, current_state, constraint_c1, constraint_c2,
+                                                                         memory_size)));
+        state_table.insert(std::pair<int, state_change>(ID + 1,
+                                                        state_change(1, current_state, constraint_c1, constraint_c2,
+                                                                     memory_size)));
+    }
 
 }
 
@@ -13,19 +31,18 @@ void statetable() {
 /// \param memory_size memory depth
 /// \param message message word
 //todo:注意将8进制转为10进制
-std::vector<int> encoder(const int n1, const int n2, const int memory_size,
-                         const std::vector<int> &message) {
+vector<int> encoder(const int n1, const int n2, const int memory_size,
+                    const vector<int> &message) {
     //convolution encoder, the input is message[] and the output is codeword[]
-    std::vector<int> encoded_message;
-    std::vector<int> reg(memory_size + 1, 0); //包括输入的移位寄存器
+    vector<int> encoded_message;
+    vector<int> reg(memory_size + 1, 0); //包括输入的移位寄存器
     int size = reg.size();
-    for (int i=0;i<message.size();++i) {
+    for (int i: message) {
         //移位
-        for (int k = size-1; k >0; --k) {
-            reg[k]=reg[k-1];
+        for (int k = size - 1; k > 0; --k) {
+            reg[k] = reg[k - 1];
         }
-        reg[0]=message[i];
-        
+        reg[0] = i;
         int temp_c1 = 0;
         int temp_c2 = 0;
         for (int j = 0; j < size; ++j) {
@@ -42,10 +59,10 @@ std::vector<int> encoder(const int n1, const int n2, const int memory_size,
     return encoded_message;
 }
 
-std::vector<std::vector<double>> modulation(const std::vector<int>& codeword) {
+vector<vector<double>> modulation(const vector<int> &codeword) {
     //BPSK modulation
     int i;
-    std::vector<std::vector<double>> modulated_codeword(codeword.size(),std::vector<double>(2,0.0));
+    vector<vector<double>> modulated_codeword(codeword.size(), vector<double>(2, 0.0));
     //0 is mapped to (1,0) and 1 is mapped tp (-1,0)
     for (i = 0; i < codeword.size(); i++) {
         modulated_codeword[i][0] = -1 * (2 * codeword[i] - 1);
@@ -54,11 +71,11 @@ std::vector<std::vector<double>> modulation(const std::vector<int>& codeword) {
     return modulated_codeword;
 }
 
-std::vector<std::vector<double>> channel(std::vector<std::vector<double>> tx_symbol, double sgm) {
+vector<vector<double>> channel(vector<vector<double>> tx_symbol, double sgm) {
     //AWGN channel
     int i, j;
     double u, r, g;
-    std::vector<std::vector<double>> rx_symbol(tx_symbol.size(),std::vector<double>(2,0.0));
+    vector<vector<double>> rx_symbol(tx_symbol.size(), vector<double>(2, 0.0));
     for (i = 0; i < tx_symbol.size(); i++) {
         for (j = 0; j < 2; j++) {
             u = (float) rand() / (float) RAND_MAX;
@@ -74,13 +91,13 @@ std::vector<std::vector<double>> channel(std::vector<std::vector<double>> tx_sym
             rx_symbol[i][j] = tx_symbol[i][j] + g;
         }
     }
-    return  rx_symbol;
+    return rx_symbol;
 }
 
-std::vector<int> demodulation(std::vector<std::vector<double>> rx_symbol) {
+vector<int> demodulation(vector<vector<double>> rx_symbol) {
     int i;
     double d1, d2;
-    std::vector<int> re_codeword(rx_symbol.size());
+    vector<int> re_codeword(rx_symbol.size());
     for (i = 0; i < rx_symbol.size(); i++) {
         d1 = (rx_symbol[i][0] - 1) * (rx_symbol[i][0] - 1) + rx_symbol[i][1] * rx_symbol[i][1];
         d2 = (rx_symbol[i][0] + 1) * (rx_symbol[i][0] + 1) + rx_symbol[i][1] * rx_symbol[i][1];
@@ -92,6 +109,6 @@ std::vector<int> demodulation(std::vector<std::vector<double>> rx_symbol) {
     return re_codeword;
 }
 
-void decoder() {
+vector<int> decoder(vector<int> re_codeword) {
 
 }
