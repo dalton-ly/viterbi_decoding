@@ -21,7 +21,9 @@ vector<vector<double>> tx_symbol;//(codeword_length,vector<double>(2));
 vector<vector<double>> rx_symbol;
 
 
-int main() {
+void test_statetable();
+
+void test(){
     int i;
     float SNR, start, finish;
     long int bit_error, seq, seq_num;
@@ -55,7 +57,7 @@ int main() {
             ****************/
             for (i = 0; i < message_length - state_num; i++) {
 //                message[i] = rand() % 2;
-                    message.push_back(rand()%2);
+                message.push_back(rand()%2);
             }
             for (i = message_length - state_num; i < message_length; i++) {
 //                message[i] = 0;
@@ -99,6 +101,27 @@ int main() {
         printf("Progress=%2.1f, SNR=%2.1f, Bit Errors=%2.1d, BER=%E\n", progress, SNR, bit_error, BER);
     }
     system("pause");
+}
 
+
+int main() {
+
+//    cout<<int_to_binaryString(10);
+//    int constraint_=3;
+//    for (int state = 0; state <(1 << (constraint_ - 1)) ; ++state) {
+//        int s = (state & ((1 << (constraint_ - 2)) - 1)) << 1;//todo: 这里含义是什么？
+//        cout<<( s | 0)<<endl;
+//        cout<<(s | 1)<<endl;
+//    }
+    test_statetable();
+    //    test();
     return 0;
+}
+
+void test_statetable() {
+    auto table= statetable(7, 5, 2);
+    for (int i=0;i<(8);++i)
+    {
+        cout<<"input:"<<table.at(i).input<<"    current:"<<table.at(i).current_state<<" next:"<<table.at(i).next_state<<endl;
+    }
 }

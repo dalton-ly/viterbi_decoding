@@ -4,24 +4,30 @@
 #include"../include/viterbi.h"
 #include "../include/state_change.h"
 
-std::string int_to_binaryString(int num) {
-    char temp[201];
-    itoa(num, temp, 2);
-    return std::string(temp);
+std::string int_to_binaryString(int num, int width) {
+    std::string result;
+    for (int i = 0; i < width; ++i) {
+        if (num & (1 << (width - i - 1)))
+            result+="1";
+        else
+            result+="0";
+    }
+    return result;
 }
 
-void statetable(int constraint_c1, int constraint_c2, int memory_size) {
+map<int, state_change> statetable(int constraint_c1, int constraint_c2, int memory_size) {
 
     map<int, state_change> state_table;
 
-    for (int ID = 0; ID < (1 << (memory_size + 1)); ++ID) {
-        std::string current_state = int_to_binaryString(ID);
+    for (int ID = 0; ID < (1 << (memory_size + 1)); ID+=2) {
+        std::string current_state = int_to_binaryString(ID, memory_size);
         state_table.insert(std::pair<int, state_change>(ID, state_change(0, current_state, constraint_c1, constraint_c2,
                                                                          memory_size)));
         state_table.insert(std::pair<int, state_change>(ID + 1,
                                                         state_change(1, current_state, constraint_c1, constraint_c2,
                                                                      memory_size)));
     }
+    return state_table;
 
 }
 
