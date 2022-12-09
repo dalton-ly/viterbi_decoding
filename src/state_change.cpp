@@ -10,4 +10,6 @@ state_change::state_change(int in, const std::string& current, int constraint_c1
     current_state = current;
     next_state = (std::to_string(in) + current).substr(0, memory_size); //状态转移
     output=encoder(constraint_c1,constraint_c2,memory_size,vector<int>(1,in));
+    memory_Size=memory_size;
+
 }

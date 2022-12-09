@@ -13,6 +13,7 @@ public:
     state_change(int in, const std::string &current, int constraint_c1, int constraint_c2, int memory_size);
 
     int input;
+    int memory_Size;
     std::string current_state;
     std::string next_state;
     std::vector<int> output;

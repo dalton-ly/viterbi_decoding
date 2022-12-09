@@ -77,7 +77,7 @@ void test(){
             //demodulation();
 
             //convolutional decoder
-            decoder(std::vector<int>());
+            decoder(std::vector<int>(), 0, 0, 0);
 
             //calculate the number of bit error
             for (i = 0; i < message_length; i++) {
@@ -113,7 +113,8 @@ int main() {
 //        cout<<( s | 0)<<endl;
 //        cout<<(s | 1)<<endl;
 //    }
-    test_statetable();
+    decoder(vector<int>{1, 2, 3, 4}, 2, 0, 0);
+    //test_statetable();
     //    test();
     return 0;
 }
