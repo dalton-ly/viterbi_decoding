@@ -7,12 +7,9 @@ using std::endl;
 int message_length; //the length of message
 int codeword_length; //the length of codeword
 int state_num;      //the number of the state of encoder structure memory size?
-float code_rate = (float) message_length / (float) codeword_length;
 // channel coefficient
 double N0, sgm;
-#define message_length 1000 //the length of message
-//#define sta
-//#define codeword_length 10 //the length of codeword
+
 vector<int> message;
 vector<int> codeword;
 vector<int> re_codeword;
@@ -24,16 +21,24 @@ vector<vector<double>> rx_symbol;
 
 void test_statetable();
 
-void test(){
+void test() {
     int i;
     float SNR, start, finish;
     long int bit_error, seq, seq_num;
     double BER;
     double progress;
+    int memory_depth;
+    int constraint_C1,constraint_C2;
+    cout<<"please enter the message_length"<<endl;
+    cin>>message_length;
+    cout<<"please enter the memory depth"<<endl;
+    cin>>memory_depth;
+    cout<<"please enter the constraint number of c1 (base 10)"<<endl;
+    cin>>constraint_C1;
+    cout<<"please enter the constraint number of c2 (base 10)"<<endl;
+    cin>>constraint_C2;
 
-    //generate state table
-//    statetable(0, 0, 0);
-
+    float code_rate = 0.5;
     //random seed
     srand((int) time(nullptr));
 
@@ -57,26 +62,24 @@ void test(){
             Pay attention that message is appended by 0 whose number is equal to the state of encoder structure.
             ****************/
             for (i = 0; i < message_length - state_num; i++) {
-//                message[i] = rand() % 2;
-                message.push_back(rand()%2);
+                message.push_back(rand() % 2);
             }
-//1
-//            message={1,0,1,0,0};
+
 
             //convolutional encoder
-            codeword=encoder(7, 5, 2, message);
+            codeword = encoder(constraint_C1, constraint_C2, memory_depth, message);
 
             //BPSK modulation
-            tx_symbol=modulation(codeword);
+            tx_symbol = modulation(codeword);
 
             //AWGN channel
-            rx_symbol=channel(tx_symbol, 0.5);
+            rx_symbol = channel(tx_symbol, sgm);
 
             //BPSK demodulation, it's needed in hard-decision Viterbi decoder
-            re_codeword=demodulation(rx_symbol);
+            re_codeword = demodulation(rx_symbol);
 
             //convolutional decoder
-            de_message=decoder(re_codeword,2, 7, 5);
+            de_message = decoder(re_codeword, memory_depth, constraint_C1, constraint_C2);
 
             //calculate the number of bit error
             for (i = 0; i < message_length; i++) {
@@ -104,24 +107,15 @@ void test(){
 
 
 int main() {
-
-//    cout<<int_to_binaryString(10);
-//    int constraint_=3;
-//    for (int state = 0; state <(1 << (constraint_ - 1)) ; ++state) {
-//        int s = (state & ((1 << (constraint_ - 2)) - 1)) << 1;//todo: 这里含义是什么？
-//        cout<<( s | 0)<<endl;
-//        cout<<(s | 1)<<endl;
-//    }
-//    decoder(vector<int>{1, 2, 3, 4}, 2, 0, 0);
-    //test_statetable();
-        test();
+    test();
     return 0;
 }
 
+
 void test_statetable() {
-    auto table= statetable(7, 5, 2);
-    for (int i=0;i<(8);++i)
-    {
-        cout<<"input:"<<table.at(i).input<<"    current:"<<table.at(i).current_state<<" next:"<<table.at(i).next_state<<endl;
+    auto table = statetable(7, 5, 2);
+    for (int i = 0; i < (8); ++i) {
+        cout << "input:" << table.at(i).input << "    current:" << table.at(i).current_state << " next:"
+             << table.at(i).next_state << endl;
     }
 }
