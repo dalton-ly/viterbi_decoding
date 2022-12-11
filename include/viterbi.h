@@ -14,6 +14,7 @@
 #include<map>
 #include<limits>
 #include <utility>
+#include <algorithm>
 #include "../include/state_change.h"
 #define pi M_PI
 using std::vector;
@@ -22,10 +23,11 @@ using Trellis = vector<vector<int>>;
 map<int, state_change> statetable(int constraint_c1, int constraint_c2, int memory_size);
 
 vector<int> encoder(int n1, const int n2, const int memory_size, const vector<int>& message);
+vector<int> encoder(int n1, const int n2, const int memory_size, const vector<int>& message,const vector<int>& current_state);
 
 vector<vector<double>> modulation(const vector<int>& codeword);
 
-void demodulation(vector<vector<double>> rx_symbol, vector<int> re_codeword);
+vector<int>  demodulation(vector<vector<double>> rx_symbol);
 
 vector<vector<double>> channel(vector<vector<double>> tx_symbol, double seg);
 

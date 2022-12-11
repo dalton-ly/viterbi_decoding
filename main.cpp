@@ -10,7 +10,8 @@ int state_num;      //the number of the state of encoder structure memory size?
 float code_rate = (float) message_length / (float) codeword_length;
 // channel coefficient
 double N0, sgm;
-//#define message_length 5 //the length of message
+#define message_length 1000 //the length of message
+//#define sta
 //#define codeword_length 10 //the length of codeword
 vector<int> message;
 vector<int> codeword;
@@ -31,7 +32,7 @@ void test(){
     double progress;
 
     //generate state table
-    statetable(0, 0, 0);
+//    statetable(0, 0, 0);
 
     //random seed
     srand((int) time(nullptr));
@@ -59,25 +60,23 @@ void test(){
 //                message[i] = rand() % 2;
                 message.push_back(rand()%2);
             }
-            for (i = message_length - state_num; i < message_length; i++) {
-//                message[i] = 0;
-                message.push_back(rand()%2);
-            }
+//1
+//            message={1,0,1,0,0};
 
             //convolutional encoder
-            codeword=encoder(0, 0, 0, message);
+            codeword=encoder(7, 5, 2, message);
 
             //BPSK modulation
-            tx_symbol=modulation(message);
+            tx_symbol=modulation(codeword);
 
             //AWGN channel
-            channel(std::vector<std::vector<double>>(), 0);
+            rx_symbol=channel(tx_symbol, 0.5);
 
             //BPSK demodulation, it's needed in hard-decision Viterbi decoder
-            //demodulation();
+            re_codeword=demodulation(rx_symbol);
 
             //convolutional decoder
-            decoder(std::vector<int>(), 0, 0, 0);
+            de_message=decoder(re_codeword,2, 7, 5);
 
             //calculate the number of bit error
             for (i = 0; i < message_length; i++) {
@@ -113,9 +112,9 @@ int main() {
 //        cout<<( s | 0)<<endl;
 //        cout<<(s | 1)<<endl;
 //    }
-    decoder(vector<int>{1, 2, 3, 4}, 2, 0, 0);
+//    decoder(vector<int>{1, 2, 3, 4}, 2, 0, 0);
     //test_statetable();
-    //    test();
+        test();
     return 0;
 }
 

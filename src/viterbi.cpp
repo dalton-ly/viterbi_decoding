@@ -20,7 +20,11 @@ map<int, state_change> statetable(int constraint_c1, int constraint_c2, int memo
     map<int, state_change> state_table;
 
     for (int ID = 0; ID < (1 << (memory_size + 1)); ID += 2) {
-        std::string current_state = int_to_binaryString(ID, memory_size);
+        std::string current_state;
+        if (ID % 2 == 0)
+            current_state = int_to_binaryString(ID / 2, memory_size);
+        else
+            current_state = int_to_binaryString((ID - 1) / 2, memory_size); // eg 2,3->1
         state_table.insert(std::pair<int, state_change>(ID, state_change(0, current_state, constraint_c1, constraint_c2,
                                                                          memory_size)));
         state_table.insert(std::pair<int, state_change>(ID + 1,
@@ -131,6 +135,25 @@ vector<int> decoder(vector<int> re_codeword,
         update_path_metrics(current_bits, &path_metrics, &trellis, transition_table);
     }
 
+    //trace back
+    vector<int> decoded_bits;
+    int index = std::min_element(path_metrics.begin(), path_metrics.end()) - path_metrics.begin();
+    for (int i = trellis.size() - 1; i >= 0; --i) {
+        int id = trellis[i][index];
+        decoded_bits.push_back(transition_table.at(id).input);
+        index = std::stoi(transition_table.at(id).current_state, nullptr, 2);
+    }
+
+//    int state = std::min_element(path_metrics.begin(), path_metrics.end()) -
+//                path_metrics.begin();
+//    for (int i = trellis.size() - 1; i >= 0; i--) {
+//        decoded_bits.push_back( (state >>(memory_size-1)) ? 1 : 0);
+//        state = trellis[i][state];
+//    }
+    std::reverse(decoded_bits.begin(), decoded_bits.end());
+    return decoded_bits;
+
+
 }
 
 void update_path_metrics(const vector<int> &current_bits,
@@ -163,8 +186,8 @@ std::pair<int, int> Compute_path_metric(const vector<int> &bits,
 
     vector<int> prev_ID = find_previous_state_ID(int_to_binaryString(state, int(log2(prev_path_metrics.size()))),
                                                  transition_table);
-    int source_state1 = std::stoi(transition_table.at(prev_ID[0]).current_state);
-    int source_state2 = std::stoi(transition_table.at(prev_ID[1]).current_state);
+    int source_state1 = std::stoi(transition_table.at(prev_ID[0]).current_state, nullptr, 2);
+    int source_state2 = std::stoi(transition_table.at(prev_ID[1]).current_state, nullptr, 2);
 
     int pm1 = prev_path_metrics[source_state1];
     if (pm1 < std::numeric_limits<int>::max()) {
@@ -176,9 +199,9 @@ std::pair<int, int> Compute_path_metric(const vector<int> &bits,
     }
 
     if (pm1 <= pm2) {
-        return std::make_pair(pm1, source_state1);
+        return std::make_pair(pm1, prev_ID[0]);
     } else {
-        return std::make_pair(pm2, source_state2);
+        return std::make_pair(pm2, prev_ID[1]);
     }
 
 }
@@ -212,4 +235,35 @@ int BranchMetric(const vector<int> &received_bits, int trans_ID, const map<int, 
     }
 
     return distance;
+}
+
+vector<int> encoder(int n1, const int n2, const int memory_size,
+                    const vector<int> &message,
+                    const vector<int> &current_state) {
+    vector<int> encoded_message;
+    vector<int> reg(memory_size + 1, 0); //包括输入的移位寄存器
+    for (int i = 0; i < reg.size()-1; ++i) {
+        reg[i]=current_state[i];
+    }
+    int size = reg.size();
+    for (int i: message) {
+        //移位
+        for (int k = size - 1; k > 0; --k) {
+            reg[k] = reg[k - 1];
+        }
+        reg[0] = i;
+        int temp_c1 = 0;
+        int temp_c2 = 0;
+        for (int j = 0; j < size; ++j) {
+            if (n1 & (1 << j)) {
+                temp_c1 = reg[size - 1 - j] ^ temp_c1;
+            }
+            if (n2 & (1 << j)) {
+                temp_c2 = reg[size - 1 - j] ^ temp_c2;
+            }
+        }
+        encoded_message.push_back(temp_c1);
+        encoded_message.push_back(temp_c2);
+    }
+    return encoded_message;
 }
