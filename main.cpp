@@ -28,15 +28,15 @@ void test() {
     double BER;
     double progress;
     int memory_depth;
-    int constraint_C1,constraint_C2;
-    cout<<"please enter the message_length"<<endl;
-    cin>>message_length;
-    cout<<"please enter the memory depth"<<endl;
-    cin>>memory_depth;
-    cout<<"please enter the constraint number of c1 (base 10)"<<endl;
-    cin>>constraint_C1;
-    cout<<"please enter the constraint number of c2 (base 10)"<<endl;
-    cin>>constraint_C2;
+    int constraint_C1, constraint_C2;
+    cout << "please enter the message_length" << endl;
+    cin >> message_length;
+    cout << "please enter the memory depth" << endl;
+    cin >> memory_depth;
+    cout << "please enter the constraint number of c1 (base 10)" << endl;
+    cin >> constraint_C1;
+    cout << "please enter the constraint number of c2 (base 10)" << endl;
+    cin >> constraint_C2;
 
     float code_rate = 0.5;
     //random seed

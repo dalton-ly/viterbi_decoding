@@ -144,12 +144,6 @@ vector<int> decoder(vector<int> re_codeword,
         index = std::stoi(transition_table.at(id).current_state, nullptr, 2);
     }
 
-//    int state = std::min_element(path_metrics.begin(), path_metrics.end()) -
-//                path_metrics.begin();
-//    for (int i = trellis.size() - 1; i >= 0; i--) {
-//        decoded_bits.push_back( (state >>(memory_size-1)) ? 1 : 0);
-//        state = trellis[i][state];
-//    }
     std::reverse(decoded_bits.begin(), decoded_bits.end());
     return decoded_bits;
 
@@ -242,8 +236,8 @@ vector<int> encoder(int n1, const int n2, const int memory_size,
                     const vector<int> &current_state) {
     vector<int> encoded_message;
     vector<int> reg(memory_size + 1, 0); //包括输入的移位寄存器
-    for (int i = 0; i < reg.size()-1; ++i) {
-        reg[i]=current_state[i];
+    for (int i = 0; i < reg.size() - 1; ++i) {
+        reg[i] = current_state[i];
     }
     int size = reg.size();
     for (int i: message) {
